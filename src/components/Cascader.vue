@@ -1,6 +1,8 @@
 <template>
   <div class="cascader" v-click-outside="close">
-    <div class="title" @click="toggle">22</div>
+    <div class="title" @click="toggle">
+      {{result}}
+    </div>
     <div v-if="isVisible">
       <CascaderItem :options="options" :level="level" @change="change" :value="value" />
     </div>
@@ -16,7 +18,11 @@ import clickOutside from '../directives/clickOutside';
 import CascaderItem from './CascaderItem';
 
 export interface cascaderOptionsItem {
-    label: string
+    pid: string;
+    id: string;
+    label: string;
+    email: string;
+    count: string;
     children ? : cascaderOptionsItem
   }
 
@@ -31,11 +37,15 @@ export interface cascaderOptionsItem {
 export default class Cascader extends Vue {
     @Prop() options!: cascaderOptionsItem[];
 
-    @Prop() value!: string[];
+    @Prop() value!: cascaderOptionsItem[];
 
     @Prop() level!: number;
 
     isVisible: boolean = false
+
+    get result() {
+      return this.value.map((item: cascaderOptionsItem) => item.label).join('/');
+    }
 
     close() {
       this.isVisible = false;
@@ -60,6 +70,7 @@ export default class Cascader extends Vue {
     width: 150px;
     height: 30px;
     border: 1px solid #333;
+    line-height: 30px;
   }
 
 </style>

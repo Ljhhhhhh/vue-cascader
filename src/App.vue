@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Cascader :options="options" :value="value" :level="0" v-model="value" />
+    <Cascader :options="options" :value="value" :level="0" v-model="value" @input="input" />
   </div>
 </template>
 
@@ -9,10 +9,17 @@ import {
   Component,
   Vue,
 } from 'vue-property-decorator';
+import cityList from '@/assets/data.json';
 import Cascader, {
   cascaderOptionsItem,
 } from './components/Cascader';
 
+const fetchData = ((pid: number) => new Promise < cascaderOptionsItem[] >((resolve, reject) => {
+  setTimeout(() => {
+    const currentList = cityList.filter((item: cascaderOptionsItem) => +item.pid === +pid);
+    resolve(currentList);
+  }, 200);
+}));
 
   @Component({
     components: {
@@ -23,53 +30,17 @@ import Cascader, {
 export default class App extends Vue {
     value: string[] = []
 
-    options: cascaderOptionsItem[] = [{
-      label: '肉类',
-      children: [{
-        label: '猪肉',
-        children: [{
-          label: '五花肉',
-        },
-        {
-          label: '里脊肉',
-        },
-        ],
-      },
-      {
-        label: '鸡肉',
-        children: [{
-          label: '鸡翅',
-        },
-        {
-          label: '鸡尖',
-        },
-        ],
-      },
-      ],
-    }, {
-      label: '蔬菜',
-      children: [{
-        label: '叶菜类',
-        children: [{
-          label: '大白菜',
-        },
-        {
-          label: '包心菜',
-        },
-        ],
-      },
-      {
-        label: '根茎类',
-        children: [{
-          label: '萝卜',
-        },
-        {
-          label: '土豆',
-        },
-        ],
-      },
-      ],
-    }]
+    options: cascaderOptionsItem[] = []
+
+    async input(value: cascaderOptionsItem) {
+      const currentItem = value[value.length - 1];
+      const children = await fetchData(currentItem.id);
+      this.$set(currentItem, 'children', children);
+    }
+
+    async mounted() {
+      this.options = await fetchData(0);
+    }
 }
 
 </script>

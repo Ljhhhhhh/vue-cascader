@@ -6,7 +6,7 @@
       </div>
     </div>
     <div class="content-right" v-if="lists && lists.length">
-      <CascaderItem :options="lists" :level="level + 1" :value="value" />
+      <CascaderItem :options="lists" :level="level + 1" :value="value" @change="change" />
     </div>
   </div>
 </template>
@@ -16,7 +16,7 @@ import {
   Prop,
   Vue,
 } from 'vue-property-decorator';
-import cloneDeep from 'loadsh/cloneDeep';
+import _ from 'loadsh';
 import {
   cascaderOptionsItem,
 } from './Cascader';
@@ -27,7 +27,7 @@ import {
 export default class CascaderItem extends Vue {
     @Prop() options!: cascaderOptionsItem[];
 
-    @Prop() value!: string[];
+    @Prop() value!: cascaderOptionsItem[];
 
     @Prop() level!: number;
 
@@ -35,15 +35,19 @@ export default class CascaderItem extends Vue {
 
     // computed
     get lists() {
-      return this.currentSelected && this.currentSelected.children;
+      return this.value[this.level] && this.value[this.level].children;
+    }
+
+    change(item: cascaderOptionsItem) {
+      this.$emit('change', item);
     }
 
     selectItem(item: cascaderOptionsItem): void {
-      const cloneValue = cloneDeep(this.value);
-      cloneValue[this.level] = item;
-      this.$emit('change', cloneValue);
-      console.log(cloneValue);
       this.currentSelected = item;
+      const cloneValue = _.cloneDeep(this.value);
+      cloneValue[this.level] = item;
+      cloneValue.splice(this.level + 1);
+      this.$emit('change', cloneValue);
     }
 }
 
@@ -51,6 +55,23 @@ export default class CascaderItem extends Vue {
 <style lang="less" scoped>
   .content {
     display: flex;
+  }
+
+  .content-left {
+    border: 1px solid #ddd;
+    min-height: 150px;
+    max-height: 150px;
+    overflow: auto;
+  }
+
+  .label {
+    width: 80px;
+    padding-left: 5px;
+
+    &:hover {
+      background: #999;
+      cursor: pointer;
+    }
   }
 
 </style>
