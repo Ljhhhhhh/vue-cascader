@@ -1,29 +1,79 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <div>
+    <Cascader :options="options" :value="value" :level="0" v-model="value" />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from './components/HelloWorld.vue';
+import {
+  Component,
+  Vue,
+} from 'vue-property-decorator';
+import Cascader, {
+  cascaderOptionsItem,
+} from './components/Cascader';
 
-@Component({
-  components: {
-    HelloWorld,
-  },
-})
-export default class App extends Vue {}
+
+  @Component({
+    components: {
+      Cascader,
+    },
+
+  })
+export default class App extends Vue {
+    value: string[] = []
+
+    options: cascaderOptionsItem[] = [{
+      label: '肉类',
+      children: [{
+        label: '猪肉',
+        children: [{
+          label: '五花肉',
+        },
+        {
+          label: '里脊肉',
+        },
+        ],
+      },
+      {
+        label: '鸡肉',
+        children: [{
+          label: '鸡翅',
+        },
+        {
+          label: '鸡尖',
+        },
+        ],
+      },
+      ],
+    }, {
+      label: '蔬菜',
+      children: [{
+        label: '叶菜类',
+        children: [{
+          label: '大白菜',
+        },
+        {
+          label: '包心菜',
+        },
+        ],
+      },
+      {
+        label: '根茎类',
+        children: [{
+          label: '萝卜',
+        },
+        {
+          label: '土豆',
+        },
+        ],
+      },
+      ],
+    }]
+}
+
 </script>
 
 <style lang="less">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
