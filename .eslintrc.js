@@ -15,7 +15,10 @@ module.exports = {
         vue: "never",
         ts: "never"
       }
-    ]
+    ],
+    "no-cond-assign": "off",
+    "no-plusplus": "off",
+    "class-methods-use-this": "off"
   },
   parserOptions: {
     parser: "@typescript-eslint/parser"

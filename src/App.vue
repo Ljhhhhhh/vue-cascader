@@ -1,6 +1,7 @@
 <template>
   <div>
-    <Cascader :options="options" :value="value" :level="0" v-model="value" @input="input" />
+    <Cascader :options.sync="options" :value="value" :level="0" v-model="value"
+      :lazyload="lazyload" />
   </div>
 </template>
 
@@ -32,10 +33,9 @@ export default class App extends Vue {
 
     options: cascaderOptionsItem[] = []
 
-    async input(value: cascaderOptionsItem) {
-      const currentItem = value[value.length - 1];
-      const children = await fetchData(currentItem.id);
-      this.$set(currentItem, 'children', children);
+    async lazyload(id: number, callback: (list: any[]) => void) {
+      const children = await fetchData(id);
+      callback(children);
     }
 
     async mounted() {

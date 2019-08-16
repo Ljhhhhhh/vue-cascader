@@ -19,7 +19,7 @@ import {
 import _ from 'loadsh';
 import {
   cascaderOptionsItem,
-} from './Cascader';
+} from '@/components/Cascader';
 
   @Component({
     name: 'CascaderItem',
@@ -35,7 +35,12 @@ export default class CascaderItem extends Vue {
 
     // computed
     get lists() {
-      return this.value[this.level] && this.value[this.level].children;
+      if (this.value[this.level] && this.value[this.level].id) {
+        const o = this.options.find(item => item.id === this.value[this.level].id);
+        return o.children;
+      }
+      return [];
+      // return this.value[this.level] && this.value[this.level].children;
     }
 
     change(item: cascaderOptionsItem) {

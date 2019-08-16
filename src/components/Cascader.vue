@@ -14,6 +14,7 @@ import {
   Prop,
   Vue,
 } from 'vue-property-decorator';
+import _ from 'loadsh';
 import clickOutside from '../directives/clickOutside';
 import CascaderItem from './CascaderItem';
 
@@ -41,6 +42,8 @@ export default class Cascader extends Vue {
 
     @Prop() level!: number;
 
+    @Prop() lazyload!: (id: number, callback: (children: cascaderOptionsItem[]) => any) => any;
+
     isVisible: boolean = false
 
     get result() {
@@ -55,7 +58,36 @@ export default class Cascader extends Vue {
       this.isVisible = !this.isVisible;
     }
 
+    handle(id: number, children: cascaderOptionsItem[]) {
+      const cloneOptions = _.cloneDeep(this.options);
+      let stack = [...cloneOptions];
+      let current;
+      let index = 0;
+      while (current = stack[index++]) {
+        if (current.id !== id) {
+          if (current.children) {
+            stack = stack.concat(current.children);
+          }
+        } else {
+          break;
+        }
+      }
+      if (current) {
+        current.children = children;
+        this.$emit('update:options', cloneOptions);
+      }
+    }
+
     change(value: any[]) {
+      const lastItem = value[value.length - 1];
+      const {
+        id,
+      } = lastItem;
+      if (this.lazyload) {
+        this.lazyload(id, (children: cascaderOptionsItem[]) => {
+          this.handle(id, children);
+        });
+      }
       this.$emit('input', value);
     }
 }
